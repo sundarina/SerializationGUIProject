@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class MainFigureClass {
 
@@ -18,101 +19,120 @@ public class MainFigureClass {
         AbstractFigureFabric c = new ColorFigureFabric();
 
         Figure[] masFig = new Figure[10];
-        for (int i = 0; i < masFig.length; i++) {
-            masFig[i] = s.rand();
-            System.out.print(masFig[i]);
-            System.out.print("\n");
-        }
+//        for (int i = 0; i < masFig.length; i++) {
+//            masFig[i] = s.rand();
+//            System.out.print(masFig[i]);
+//            System.out.print("\n");
+//        }
 
         ColorAble[] masColor = new ColorAble[10];
-        for (int i = 0; i < masColor.length; i++) {
-            masColor[i] = (ColorAble) c.rand();
-            System.out.print(masColor[i]);
-            System.out.print("\n");
-        }
+//        for (int i = 0; i < masColor.length; i++) {
+//            masColor[i] = (ColorAble) c.rand();
+//            System.out.print(masColor[i]);
+//            System.out.print("\n");
+//        }
 
 
-        for (Figure figure : masFig) {
-            if (figure.getClass().getName().equals("CPoint")) {
-                writeFigures(figure, pathCPoint);
-            }
-            if (figure.getClass().getName().equals("CLine")) {
-                writeFigures(figure, pathCLine);
-            }
-            if (figure.getClass().getName().equals("TriangleClass")) {
-                writeFigures(figure, pathTriangle);
-            }
-        }
-
-
-        for (ColorAble color : masColor) {
-
-            if (color.getClass().getName().equals("CcoloredPoint")) {
-                writeFigures(color, pathCcoloredPoint);
-            }
-            if (color.getClass().getName().equals("CcoloredLine")) {
-                writeFigures(color, pathCcoloredLine);
-            }
-
-            if (color.getClass().getName().equals("ColorTriangle")) {
-                writeFigures(color, pathColorTriangle);
-            }
-        }
+//        for (Figure figure : masFig) {
+//            if (figure.getClass().getName().equals("CPoint")) {
+//                writeFigures(figure, pathCPoint);
+//            }
+//            if (figure.getClass().getName().equals("CLine")) {
+//                writeFigures(figure, pathCLine);
+//            }
+//            if (figure.getClass().getName().equals("TriangleClass")) {
+//                writeFigures(figure, pathTriangle);
+//            }
+//        }
+//
+//        for (ColorAble color : masColor) {
+//
+//            if (color.getClass().getName().equals("CcoloredPoint")) {
+//                writeFigures(color, pathCcoloredPoint);
+//
+//            }
+//            if (color.getClass().getName().equals("CcoloredLine")) {
+//                writeFigures(color, pathCcoloredLine);
+//
+//            }
+//
+//            if (color.getClass().getName().equals("ColorTriangle")) {
+//                writeFigures(color, pathColorTriangle);
+//
+//            }
+//        }
+//
 
         int count = 0;
-        Object obj = readFigures(pathCPoint);
-        for (int i = 0; i < masFig.length; i++) {
-            masFig[i] = (CPoint) obj;
+        ArrayList<Object> list = readFigures(pathCPoint);
+
+        for (int i = 0; i < list.size(); i++) {
+            masFig[i] = (CPoint) list.get(i);
             count++;
         }
 
-        Object obj1 = readFigures(pathCLine);
-        for (int i = count; i < masFig.length; i++) {
-            masFig[i] = (CLine) obj1;
+        list = readFigures(pathCLine);
+        for (int i = 0; i < list.size(); i++) {
+            masFig[count + i] = (CLine) list.get(i);
             count++;
         }
 
-        Object obj2 = readFigures(pathTriangle);
-        for (int i = count; i < masFig.length; i++) {
-            masFig[i] = (TriangleClass) obj2;
+        list = readFigures(pathTriangle);
+        for (int i = 0; i < list.size(); i++) {
+            masFig[i + count] = (TriangleClass) list.get(i);
         }
-
 
 
         int countC = 0;
-        Object obj4 = readFigures(pathCcoloredPoint);
-        for (int i = 0; i < masColor.length; i++) {
-            masColor[i] = (CcoloredPoint) obj4;
+        ArrayList<Object> listColor = readFigures(pathCcoloredPoint);
+
+        for (int i = 0; i < listColor.size(); i++) {
+            masColor[i] = (CcoloredPoint) listColor.get(i);
             countC++;
-        }
-        Object obj5 = readFigures(pathCcoloredLine);
-        for (int i = countC; i < masColor.length; i++) {
-            masColor[i] = (CcoloredLine) obj5;
-            countC++;
-        }
-            Object obj6 = readFigures(pathColorTriangle);
-            for (int i = countC; i < masColor.length; i++) {
-                masColor[i] = (ColorTriangle) obj6;
-                countC++;
         }
 
-       new GUIFigureClass(s, c, masFig, masColor);
+        listColor = readFigures(pathCcoloredLine);
+        for (int i = 0; i < listColor.size(); i++) {
+            masColor[i + countC] = (CcoloredLine) listColor.get(i);
+            countC++;
+        }
+
+        listColor = readFigures(pathColorTriangle);
+        for (int i = 0; i < listColor.size(); i++) {
+            masColor[i + countC] = (ColorTriangle) listColor.get(i);
+        }
+
+        new GUIFigureClass(s, c, masFig, masColor);
     }
 
 
-    public Object readFigures(String path) throws FileNotFoundException, IOException, ClassNotFoundException {
+    public ArrayList<Object> readFigures(String path) throws FileNotFoundException, IOException, ClassNotFoundException {
         ObjectInputStream objRead = new ObjectInputStream(new FileInputStream(path));
-        Object o = null;
-       do {
-            o = objRead.readObject();
-        }  while (objRead.available() > 0);
-       objRead.close();
-        return o;
+        ArrayList<Object> list = new ArrayList<>();
+        Object o;
+        while (true) {
+            try {
+                o = objRead.readObject();
+            } catch (EOFException e) {
+                break;
+            }
+            list.add(o);
+
+            if (o == null) {
+                break;
+
+            }
+
+        }
+
+        objRead.close();
+        return list;
     }
 
     public void writeFigures(Object o, String path) throws FileNotFoundException, IOException {
 
         ObjectOutputStream objSave = new ObjectOutputStream(new FileOutputStream(path));
+
         objSave.writeObject(o);
         try {
             objSave.flush();
