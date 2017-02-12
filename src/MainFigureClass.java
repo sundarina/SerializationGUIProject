@@ -18,98 +18,110 @@ public class MainFigureClass {
         AbstractFigureFabric c = new ColorFigureFabric();
 
         Figure[] masFig = new Figure[10];
-//        for (int i = 0; i < masFig.length; i++) {
-//            masFig[i] = s.rand();
-//            System.out.print(masFig[i]);
-//            System.out.print("\n");
-//        }
-//
+        for (int i = 0; i < masFig.length; i++) {
+            masFig[i] = s.rand();
+            System.out.print(masFig[i]);
+            System.out.print("\n");
+        }
+
         ColorAble[] masColor = new ColorAble[10];
-//        for (int i = 0; i < masColor.length; i++) {
-//            masColor[i] = (ColorAble) c.rand();
-//            System.out.print(masColor[i]);
-//            System.out.print("\n");
-//        }
+        for (int i = 0; i < masColor.length; i++) {
+            masColor[i] = (ColorAble) c.rand();
+            System.out.print(masColor[i]);
+            System.out.print("\n");
+        }
 
 
-//        for (Figure figure : masFig) {
-//            if (figure.getClass().getName().equals("CPoint")) {
-//                writeFigures(figure, pathCPoint);
-//            }
-//            if (figure.getClass().getName().equals("CLine")) {
-//                writeFigures(figure, pathCLine);
-//            }
-//            if (figure.getClass().getName().equals("TriangleClass")) {
-//                writeFigures(figure, pathTriangle);
-//            }
-//        }
-//
-//
-//        for (ColorAble color : masColor) {
-//
-//            if (color.getClass().getName().equals("CcoloredPoint")) {
-//                writeFigures(color, pathCcoloredPoint);
-//            }
-//            if (color.getClass().getName().equals("CcoloredLine")) {
-//                writeFigures(color, pathCcoloredLine);
-//            }
-//
-//            if (color.getClass().getName().equals("ColorTriangle")) {
-//                writeFigures(color, pathColorTriangle);
-//            }
-//        }
+        for (Figure figure : masFig) {
+            if (figure.getClass().getName().equals("CPoint")) {
+                writeFigures(figure, pathCPoint);
+            }
+            if (figure.getClass().getName().equals("CLine")) {
+                writeFigures(figure, pathCLine);
+            }
+            if (figure.getClass().getName().equals("TriangleClass")) {
+                writeFigures(figure, pathTriangle);
+            }
+        }
 
+
+        for (ColorAble color : masColor) {
+
+            if (color.getClass().getName().equals("CcoloredPoint")) {
+                writeFigures(color, pathCcoloredPoint);
+            }
+            if (color.getClass().getName().equals("CcoloredLine")) {
+                writeFigures(color, pathCcoloredLine);
+            }
+
+            if (color.getClass().getName().equals("ColorTriangle")) {
+                writeFigures(color, pathColorTriangle);
+            }
+        }
 
         int count = 0;
-
-        do {
-            for (int i = 0; i < masFig.length; i++) {
-                Object obj = readFigures(pathCPoint);
-                masFig[i] = (CPoint) obj;
-                count++;
-            }
-
-            for (int i = count; i < masFig.length; i++) {
-                Object obj1 = readFigures(pathCLine);
-                masFig[i] = (CLine) obj1;
-                count++;
-            }
-
-
-            for (int i = count; i < masFig.length; i++) {
-                Object obj2 = readFigures(pathTriangle);
-                masFig[i] = (TriangleClass) obj2;
-            }
-
-        } while (count != masFig.length);
-
-        for (ColorAble colorAble : masColor) {
-            Object obj4 = readFigures(pathCcoloredPoint);
-            colorAble = (CcoloredPoint) obj4;
-        }
-        for (ColorAble colorAble : masColor) {
-            Object obj4 = readFigures(pathCcoloredLine);
-            colorAble = (CcoloredLine) obj4;
-        }
-        for (ColorAble colorAble : masColor) {
-            Object obj4 = readFigures(pathColorTriangle);
-            colorAble = (ColorTriangle) obj4;
+        Object obj = readFigures(pathCPoint);
+        for (int i = 0; i < masFig.length; i++) {
+            masFig[i] = (CPoint) obj;
+            count++;
         }
 
-        new GUIFigureClass(s, c, masFig, masColor);
+        Object obj1 = readFigures(pathCLine);
+        for (int i = count; i < masFig.length; i++) {
+            masFig[i] = (CLine) obj1;
+            count++;
+        }
+
+        Object obj2 = readFigures(pathTriangle);
+        for (int i = count; i < masFig.length; i++) {
+            masFig[i] = (TriangleClass) obj2;
+        }
+
+
+
+        int countC = 0;
+        Object obj4 = readFigures(pathCcoloredPoint);
+        for (int i = 0; i < masColor.length; i++) {
+            masColor[i] = (CcoloredPoint) obj4;
+            countC++;
+        }
+        Object obj5 = readFigures(pathCcoloredLine);
+        for (int i = countC; i < masColor.length; i++) {
+            masColor[i] = (CcoloredLine) obj5;
+            countC++;
+        }
+            Object obj6 = readFigures(pathColorTriangle);
+            for (int i = countC; i < masColor.length; i++) {
+                masColor[i] = (ColorTriangle) obj6;
+                countC++;
+        }
+
+       new GUIFigureClass(s, c, masFig, masColor);
     }
 
 
     public Object readFigures(String path) throws FileNotFoundException, IOException, ClassNotFoundException {
         ObjectInputStream objRead = new ObjectInputStream(new FileInputStream(path));
-        return objRead.readObject();
+        Object o = null;
+       do {
+            o = objRead.readObject();
+        }  while (objRead.available() > 0);
+       objRead.close();
+        return o;
     }
 
     public void writeFigures(Object o, String path) throws FileNotFoundException, IOException {
 
         ObjectOutputStream objSave = new ObjectOutputStream(new FileOutputStream(path));
         objSave.writeObject(o);
-        //  objSave.flush();
+        try {
+            objSave.flush();
+            objSave.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public static void main(String[] args) {
