@@ -107,27 +107,20 @@ public class MainFigureClass {
 
 
     public ArrayList<Object> readFigures(String path) throws FileNotFoundException, IOException, ClassNotFoundException {
-        ObjectInputStream objRead = new ObjectInputStream(new FileInputStream(path));
+        FileInputStream fis = new FileInputStream(path);
+        ObjectInputStream objRead = new ObjectInputStream(fis);
         ArrayList<Object> list = new ArrayList<>();
         Object o;
-        while (true) {
-            try {
-                o = objRead.readObject();
-            } catch (EOFException e) {
-                break;
-            }
+
+        while (fis.available() > 0) {
+            o = objRead.readObject();
             list.add(o);
-
-            if (o == null) {
-                break;
-
-            }
-
+            
         }
-
         objRead.close();
         return list;
     }
+
 
     public void writeFigures(Object o, String path) throws FileNotFoundException, IOException {
 
